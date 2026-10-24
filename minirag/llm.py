@@ -62,8 +62,9 @@ class MultiModel:
         self._current_model = 0
 
     def _next_model(self):
+        model = self._models[self._current_model]
         self._current_model = (self._current_model + 1) % len(self._models)
-        return self._models[self._current_model]
+        return model
 
     async def llm_model_func(
         self, prompt, system_prompt=None, history_messages=[], **kwargs
