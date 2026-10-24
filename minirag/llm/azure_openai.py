@@ -76,7 +76,7 @@ import numpy as np
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=4, max=10),
     retry=retry_if_exception_type(
-        (RateLimitError, APIConnectionError, APIConnectionError)
+        (RateLimitError, APIConnectionError, APITimeoutError)
     ),
 )
 async def azure_openai_complete_if_cache(
