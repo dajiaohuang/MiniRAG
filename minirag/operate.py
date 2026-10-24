@@ -36,6 +36,13 @@ from .prompt import GRAPH_FIELD_SEP, PROMPTS
 def chunking_by_token_size(
     content: str, overlap_token_size=128, max_token_size=1024, tiktoken_model="gpt-4o"
 ):
+    if max_token_size <= 0:
+        raise ValueError("max_token_size must be positive")
+    if not 0 <= overlap_token_size < max_token_size:
+        raise ValueError(
+            "overlap_token_size must be non-negative and smaller than max_token_size"
+        )
+
     tokens = encode_string_by_tiktoken(content, model_name=tiktoken_model)
     results = []
     for index, start in enumerate(
