@@ -161,15 +161,11 @@ class NetworkXStorage(BaseGraphStorage):
         normalized_types = {
             node_type.strip().strip('\"').casefold()
             for node_type in type_list
-            if isinstance(node_type, str)
         }
         node_list = []
         for name, attributes in self._graph.nodes(data=True):
-            node_type = attributes.get("entity_type")
-            if (
-                isinstance(node_type, str)
-                and node_type.strip().strip('\"').casefold() in normalized_types
-            ):
+            node_type = attributes["entity_type"]
+            if node_type.strip().strip('\"').casefold() in normalized_types:
                 node_list.append(name)
         node_datas = await asyncio.gather(
             *[self.get_node(name) for name in node_list]
