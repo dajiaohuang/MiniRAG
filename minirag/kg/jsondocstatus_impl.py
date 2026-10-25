@@ -94,21 +94,12 @@ class JsonDocStatusStorage(DocStatusStorage):
 
     def _to_doc_processing_status(
         self, doc_id: str, value: dict
-    ) -> Union[DocProcessingStatus, None]:
+    ) -> DocProcessingStatus:
         data = value.copy()
         if "content" not in data and "content_summary" in data:
             data["content"] = data["content_summary"]
-        if isinstance(data.get("status"), str):
-            try:
-                data["status"] = DocStatus(data["status"])
-            except ValueError as e:
-                logger.error(f"Invalid status for document {doc_id}: {e}")
-                return None
-        try:
-            return DocProcessingStatus(**data)
-        except TypeError as e:
-            logger.error(f"Invalid document status data for {doc_id}: {e}")
-            return None
+        data["status"] = DocStatus(data["status"])
+        return DocProcessingStatus(**data)
 
     async def get_docs_by_status(
         self, status: DocStatus
@@ -117,9 +108,7 @@ class JsonDocStatusStorage(DocStatusStorage):
         result = {}
         for doc_id, value in self._data.items():
             if value["status"] == status.value:
-                status_doc = self._to_doc_processing_status(doc_id, value)
-                if status_doc is not None:
-                    result[doc_id] = status_doc
+                result[doc_id] = self._to_doc_processing_status(doc_id, value)
         return result
 
     async def get_failed_docs(self) -> Dict[str, DocProcessingStatus]:
